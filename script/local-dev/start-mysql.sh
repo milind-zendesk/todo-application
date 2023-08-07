@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -e
+# Colours!
+RED=$'\x1b[1;31m'
+GREEN=$'\x1b[1;32m'
+CYAN=$'\x1b[1;36m'
+GREY=$'\x1b[0;90m'
+NORM=$'\x1b[0m'
+
+mysql_root_password="EXAMPLE_iamasafepassword"
+sql_version="8.0"
+
+current_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+# Use settings from set-environment
+source "${current_directory}/_environment.sh"
+#source "${current_directory}/run-as-minikube-docker.sh"
+
+# Mysql actually starts twice when it starts up, once on port 0 as a temporary system to initialize things
+# and once on port 3306 when it's actually going to do stuff.
+# We let the logs tell us when it's ready.
+wait_for_mysql() {
+  while ! docker logs --since 5s "${MYSQL_CONTAINER}"  2>&1 | grep "mysql.*ready for connection.*port: 3306" ; do : ; done
+}
+
+# Check if the container exists and is running
+mysql_status=$(docker ps -a --format '{{.Status}}' --filter "name=${MYSQL_CONTAINER}")
+
+if [[ -z "$mysql_status" || $mysql_status == *"Exited"* ]] ; then
+    echo "🥁  ${GREEN}Creating new MySQL container...${GREY}"
+
+    docker run \
+        --name "${MYSQL_CONTAINER}" \
+        --publish "${MYSQL_PORT}":3306 \
+        -e MYSQL_ROOT_PASSWORD="${mysql_root_password}" \
+        --detach \
+        mysql:$sql_version
+    wait_for_mysql
+  elif
+    [[ "$mysql_status" == *"Up"*  ]] ; then
+    echo "🥁  ${CYAN}MySQL is already running${GREY}"
+  else
+    echo "🥁  ${GREEN}Starting MySQL...${GREY}"
+    docker restart "${MYSQL_CONTAINER}"
+    wait_for_mysql
+fi
