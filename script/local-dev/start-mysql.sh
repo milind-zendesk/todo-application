@@ -8,6 +8,17 @@ CYAN=$'\x1b[1;36m'
 GREY=$'\x1b[0;90m'
 NORM=$'\x1b[0m'
 
+# MySQL client
+mysql_client_version=$(mysql --version 2>/dev/null | grep "Ver" | sed "s/.*Ver //")
+
+if [[ -z "$mysql_client_version" ]]; then
+  echo "🥁  ${RED}No Mysql client version detected, installing...${GREY}"
+  brew install mysql-client
+  brew link mysql-client --force
+else
+  echo -e "🥁  ${NORM}Mysql client version detected:\t${GREEN}${mysql_client_version}${NORM}"
+fi
+
 mysql_root_password="EXAMPLE_iamasafepassword"
 sql_version="8.0"
 
@@ -45,3 +56,18 @@ if [[ -z "$mysql_status" || $mysql_status == *"Exited"* ]] ; then
     docker restart "${MYSQL_CONTAINER}"
     wait_for_mysql
 fi
+
+echo "🥁  ${GREEN}Ensuring MySQL user and database exists...${GREY}"
+mysql --host="${MYSQL_HOSTNAME}" --user=root --password="${mysql_root_password}" --port="${MYSQL_PORT}" << EOT
+  -- Aurora setup
+  CREATE DATABASE IF NOT EXISTS $AURORA_DATABASE_NAME;
+  DROP USER IF EXISTS $AURORA_USERNAME;
+  CREATE USER $AURORA_USERNAME IDENTIFIED BY '$AURORA_PASSWORD';
+  GRANT ALL PRIVILEGES ON $AURORA_DATABASE_NAME.* TO $AURORA_USERNAME;
+
+  CREATE TABLE IF NOT EXISTS $AURORA_DATABASE_NAME.todos_table( id int(9) not null, title varchar(255) not null, status varchar(255))ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+EOT
+echo "🥁  ${GREEN}Table Created...${GREY}"
+
+echo "${NORM}"
