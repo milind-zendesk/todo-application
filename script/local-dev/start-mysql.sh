@@ -19,7 +19,7 @@ else
   echo -e "🥁  ${NORM}Mysql client version detected:\t${GREEN}${mysql_client_version}${NORM}"
 fi
 
-mysql_root_password="EXAMPLE_iamasafepassword"
+mysql_root_password="TempPassword"
 sql_version="8.0"
 
 current_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -68,6 +68,5 @@ mysql --host="${MYSQL_HOSTNAME}" --user=root --password="${mysql_root_password}"
   CREATE TABLE IF NOT EXISTS $AURORA_DATABASE_NAME.todos_table( id int(9) not null, title varchar(255) not null, status varchar(255))ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 EOT
-echo "🥁  ${GREEN}Table Created...${GREY}"
+echo "🥁  ${GREEN}MySQL settings done...${GREY}"
 
-echo "${NORM}"
