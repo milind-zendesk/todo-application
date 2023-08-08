@@ -1,3 +1,13 @@
+
+.DEFAULT_GOAL := run
+
+##@ Bootstrap the project
+.PHONY: bootstrap
+
+bootstrap: ## Run the bootstrap script and check if required tools are available, installing them if possible
+	./script/local-dev/bootstrap.sh
+
+##@ Run the project locally
 .PHONY: run start-mysql
 
 run: start-mysql

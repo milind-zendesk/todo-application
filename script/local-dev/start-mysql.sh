@@ -8,25 +8,13 @@ CYAN=$'\x1b[1;36m'
 GREY=$'\x1b[0;90m'
 NORM=$'\x1b[0m'
 
-# MySQL client
-mysql_client_version=$(mysql --version 2>/dev/null | grep "Ver" | sed "s/.*Ver //")
-
-if [[ -z "$mysql_client_version" ]]; then
-  echo "🥁  ${RED}No Mysql client version detected, installing...${GREY}"
-  brew install mysql-client
-  brew link mysql-client --force
-else
-  echo -e "🥁  ${NORM}Mysql client version detected:\t${GREEN}${mysql_client_version}${NORM}"
-fi
-
 mysql_root_password="TempPassword"
 sql_version="8.0"
 
 current_directory="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-# Use settings from set-environment
+# Use settings from _environment.sh
 source "${current_directory}/_environment.sh"
-#source "${current_directory}/run-as-minikube-docker.sh"
 
 # Mysql actually starts twice when it starts up, once on port 0 as a temporary system to initialize things
 # and once on port 3306 when it's actually going to do stuff.
