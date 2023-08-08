@@ -22,22 +22,16 @@ type Todos struct {
 }
 
 func main() {
-	fmt.Println("Hello World!")
 	RunServer()
-
-	// insert, err := con.Query("INSERT INTO todos_table VALUES ( 2, 'Deployment', 'Running' )")
-	// if err != nil {
-	// 	panic(err.Error())
-	// }
-	// defer insert.Close()
-	// defer con.Close()
 }
 
 func RunServer() {
 	router := mux.NewRouter()
-	router.HandleFunc("/todos", getAllTodos).Methods("GET")
-	router.HandleFunc("/todos/{id}", getTodo).Methods("GET")
+	router.HandleFunc("/todos", GetAllTodos).Methods("GET")
+	router.HandleFunc("/todos/{id}", GetTodo).Methods("GET")
 	router.HandleFunc("/delete_todo/{id}", DeleteTodo).Methods("DELETE")
+	router.HandleFunc("/edit_todo/{id}", UpdateTodo).Methods("PUT")
+	router.HandleFunc("/insert_todo", CreateTodo).Methods("POST")
 
 	err := http.ListenAndServe(":8080", router)
 	if err != nil {
@@ -46,10 +40,10 @@ func RunServer() {
 
 }
 
-func getAllTodos(writer http.ResponseWriter, request *http.Request) {
+func GetAllTodos(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 
-	todos, err := getAllTodosData(con)
+	todos, err := GetAllTodosData(con)
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +54,7 @@ func getAllTodos(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func getAllTodosData(con *sql.DB) ([]Todos, error) {
+func GetAllTodosData(con *sql.DB) ([]Todos, error) {
 	todos := []Todos{}
 
 	results, err := con.Query("SELECT * FROM todos_table;")
@@ -83,7 +77,7 @@ func getAllTodosData(con *sql.DB) ([]Todos, error) {
 	return todos, nil
 }
 
-func getTodo(writer http.ResponseWriter, request *http.Request) {
+func GetTodo(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
@@ -91,7 +85,7 @@ func getTodo(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("Invalid ID")
 	}
 
-	todo, err := getTodoData(con, id)
+	todo, err := GetTodoData(con, id)
 	if err != nil {
 		panic(err)
 	}
@@ -102,7 +96,7 @@ func getTodo(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func getTodoData(con *sql.DB, id int) (Todos, error) {
+func GetTodoData(con *sql.DB, id int) (Todos, error) {
 	todos := Todos{}
 
 	results, err := con.Query("SELECT * FROM todos_table where id = ?", id)
@@ -134,7 +128,42 @@ func DeleteTodo(writer http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Println("done")
 	defer result.Close()
+}
+
+func UpdateTodo(writer http.ResponseWriter, request *http.Request) {
+	params := mux.Vars(request)
+
+	id, err := strconv.Atoi(params["id"])
+	if err != nil {
+		fmt.Println("Invalid ID")
+	}
+
+	var todo Todos
+	json.NewDecoder(request.Body).Decode(&todo)
+	UpdateTodoData(con, id, todo)
+}
+
+func UpdateTodoData(con *sql.DB, id int, data Todos) {
+	update, err := con.Query("UPDATE todos_table set title=? , status=? where id=?", data.Title, data.Status, data.Id)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		defer update.Close()
+	}
+}
+
+func CreateTodo(writer http.ResponseWriter, request *http.Request) {
+	var todo Todos
+	json.NewDecoder(request.Body).Decode(&todo)
+	InsertTodoData(con, todo)
+}
+
+func InsertTodoData(con *sql.DB, data Todos) {
+	insert, err := con.Query("INSERT INTO todos_table VALUES (?,?,?)", data.Id, data.Title, data.Status)
+	if err != nil {
+		fmt.Println(err.Error())
+	} else {
+		defer insert.Close()
+	}
 }
