@@ -5,3 +5,6 @@ run: start-mysql
 
 start-mysql: 
 	./script/local-dev/start-mysql.sh
+
+get-todos:
+	curl localhost:8080/todos | jq .
