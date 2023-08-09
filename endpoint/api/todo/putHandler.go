@@ -1,17 +1,17 @@
-package api
+package todo
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
-	"todo-application/endpoint/api/queries"
+	"todo-application/endpoint/api/todo/queries"
 	"todo-application/model"
 
 	"github.com/gorilla/mux"
 )
 
-func UpdateTodo(writer http.ResponseWriter, request *http.Request) {
+func Update(writer http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
 
 	id, err := strconv.Atoi(params["id"])

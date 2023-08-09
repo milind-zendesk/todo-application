@@ -18,3 +18,12 @@ start-mysql:
 
 get-todos:
 	curl localhost:8080/todos | jq .
+
+add-todo:
+	curl -X POST localhost:8080/insert_todo -d '{"id":4,"title":"Exercise","status":"Done"}'
+
+vendor:
+	go mod vendor
+
+test: vendor
+	go test -cover -mod=vendor ./...

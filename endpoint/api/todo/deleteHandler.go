@@ -1,15 +1,15 @@
-package api
+package todo
 
 import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"todo-application/endpoint/api/queries"
+	"todo-application/endpoint/api/todo/queries"
 
 	"github.com/gorilla/mux"
 )
 
-func DeleteTodo(writer http.ResponseWriter, request *http.Request) {
+func Delete(writer http.ResponseWriter, request *http.Request) {
 	params := mux.Vars(request)
 
 	id, err := strconv.Atoi(params["id"])

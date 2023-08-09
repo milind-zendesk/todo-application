@@ -1,4 +1,4 @@
-package api
+package todo
 
 import (
 	"encoding/json"
@@ -7,12 +7,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"todo-application/endpoint/api/queries"
+	"todo-application/endpoint/api/todo/queries"
 
 	"github.com/gorilla/mux"
 )
 
-func GetAllTodos(writer http.ResponseWriter, request *http.Request) {
+func GetAll(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 
 	todos, err := queries.GetAllTodosData()
@@ -26,7 +26,7 @@ func GetAllTodos(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
-func GetTodo(writer http.ResponseWriter, request *http.Request) {
+func Get(writer http.ResponseWriter, request *http.Request) {
 	writer.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
