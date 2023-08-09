@@ -1,6 +1,7 @@
 package queries
 
 import (
+	"database/sql"
 	"fmt"
 	"todo-application/database"
 	"todo-application/model"
@@ -11,7 +12,7 @@ var con, _ = database.Connection()
 func GetAllTodosData() ([]model.Todos, error) {
 	todos := []model.Todos{}
 
-	results, err := con.Query("SELECT * FROM todos_table;")
+	results, err := con.Query("SELECT * FROM todo;")
 	if err != nil {
 		return todos, err
 	}
@@ -34,7 +35,7 @@ func GetAllTodosData() ([]model.Todos, error) {
 func GetTodoData(id int) (model.Todos, error) {
 	todos := model.Todos{}
 
-	results, err := con.Query("SELECT * FROM todos_table where id = ?", id)
+	results, err := con.Query("SELECT * FROM todo where id = ?", id)
 	if err != nil {
 		return todos, err
 	}
@@ -52,7 +53,7 @@ func GetTodoData(id int) (model.Todos, error) {
 }
 
 func UpdateTodoData(id int, data model.Todos) {
-	update, err := con.Query("UPDATE todos_table set title=? , status=? where id=?", data.Title, data.Status, data.Id)
+	update, err := con.Query("UPDATE todo set title=? , status=? where id=?", data.Title, data.Status, data.Id)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -61,7 +62,7 @@ func UpdateTodoData(id int, data model.Todos) {
 }
 
 func InsertTodoData(data model.Todos) {
-	insert, err := con.Query("INSERT INTO todos_table VALUES (?,?,?)", data.Id, data.Title, data.Status)
+	insert, err := con.Query("INSERT INTO todo(title, status) VALUES (?,?)", data.Title, data.Status)
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
@@ -69,10 +70,10 @@ func InsertTodoData(data model.Todos) {
 	}
 }
 
-func DeleteTodoData(id int) {
-	result, err := con.Query("DELETE FROM todos_table where id = ?", id)
+func DeleteTodoData(con *sql.DB, id int) {
+	_, err := con.Exec("DELETE FROM todo where id = ?", id)
 	if err != nil {
 		fmt.Println(err)
 	}
-	defer result.Close()
+	// defer result.Close()
 }
