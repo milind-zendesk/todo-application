@@ -5,6 +5,14 @@ import (
 	"todo-application/model"
 )
 
+type Queries interface {
+	GetAllTodosData(con *sql.DB)
+	GetTodoData(con *sql.DB, id int)
+	UpdateTodoData(con *sql.DB, id int, data model.Todos)
+	InsertTodoData(con *sql.DB, data model.Todos)
+	DeleteTodoData(con *sql.DB, id int)
+}
+
 func GetAllTodosData(con *sql.DB) ([]model.Todos, error) {
 	todos := []model.Todos{}
 

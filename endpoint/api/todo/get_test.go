@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRun(t *testing.T) {
+func Test_GetDataById(t *testing.T) {
+
 	assert.Equal(t, 1, 1)
 }
