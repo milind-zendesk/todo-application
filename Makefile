@@ -1,5 +1,8 @@
+include Makefile.tool
 
 .DEFAULT_GOAL := run
+
+MOCK_FILES = $(shell grep -l -R "go:generate mockgen" endpoint/.)
 
 ##@ Bootstrap the project
 .PHONY: bootstrap
@@ -27,3 +30,7 @@ vendor:
 
 test: vendor
 	go test -cover -mod=vendor ./...
+
+generate-mocks: $(MOCKGEN) $(MOCK_FILES) ## Generate test mock files with mockgen
+	@PATH=$(shell pwd)/$(TOOLS_BIN):$$PATH go generate ./...
+	touch generate-mocks
