@@ -56,3 +56,29 @@ func Test_InsertQuery(t *testing.T) {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
 }
+
+func Test_UpdateQuery(t *testing.T) {
+	//Prepare the tests
+	db, mock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	todo := model.Todos{
+		Title:  "Work",
+		Status: "Done",
+	}
+
+	mock.ExpectBegin()
+	mock.ExpectExec("Update todo").WithArgs(todo.Title, todo.Status).WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	//Execute the tests
+	UpdateTodoData(db, 1, todo)
+
+	// Check the results
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}

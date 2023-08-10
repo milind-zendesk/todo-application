@@ -20,7 +20,7 @@ get-todos:
 	curl localhost:8080/todos | jq .
 
 add-todo:
-	curl -X POST localhost:8080/insert_todo -d '{"title":"Work","status":"Done"}'
+	curl -X POST localhost:8080/insert_todo -d '{"title":"Shopping","status":"Pending"}'
 
 vendor:
 	go mod vendor

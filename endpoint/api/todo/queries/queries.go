@@ -52,7 +52,7 @@ func GetTodoData(id int) (model.Todos, error) {
 	return todos, nil
 }
 
-func UpdateTodoData(id int, data model.Todos) {
+func UpdateTodoData(con *sql.DB, id int, data model.Todos) {
 	update, err := con.Query("UPDATE todo set title=? , status=? where id=?", data.Title, data.Status, data.Id)
 	if err != nil {
 		fmt.Println(err.Error())

@@ -1,18 +1,19 @@
 package todo
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"todo-application/database"
 	"todo-application/endpoint/api/todo/queries"
+	"todo-application/model"
 
 	"github.com/gorilla/mux"
 )
 
-var con, _ = database.Connection()
-
-func Delete(writer http.ResponseWriter, request *http.Request) {
+func Update(writer http.ResponseWriter, request *http.Request) {
+	var con, _ = database.Connection()
 	params := mux.Vars(request)
 
 	id, err := strconv.Atoi(params["id"])
@@ -20,5 +21,7 @@ func Delete(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("Invalid ID")
 	}
 
-	queries.DeleteTodoData(con, id)
+	var todo model.Todos
+	json.NewDecoder(request.Body).Decode(&todo)
+	queries.UpdateTodoData(con, id, todo)
 }
