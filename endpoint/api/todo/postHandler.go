@@ -10,5 +10,5 @@ import (
 func Create(writer http.ResponseWriter, request *http.Request) {
 	var todo model.Todos
 	json.NewDecoder(request.Body).Decode(&todo)
-	queries.InsertTodoData(todo)
+	queries.InsertTodoData(con, todo)
 }

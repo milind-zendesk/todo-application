@@ -61,12 +61,10 @@ func UpdateTodoData(id int, data model.Todos) {
 	}
 }
 
-func InsertTodoData(data model.Todos) {
-	insert, err := con.Query("INSERT INTO todo(title, status) VALUES (?,?)", data.Title, data.Status)
+func InsertTodoData(con *sql.DB, data model.Todos) {
+	_, err := con.Exec("INSERT INTO todo(title, status) VALUES (?,?)", data.Title, data.Status)
 	if err != nil {
 		fmt.Println(err.Error())
-	} else {
-		defer insert.Close()
 	}
 }
 
@@ -75,5 +73,4 @@ func DeleteTodoData(con *sql.DB, id int) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	// defer result.Close()
 }
