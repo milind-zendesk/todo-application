@@ -2,6 +2,7 @@ package todo
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"todo-application/database"
@@ -19,5 +20,8 @@ func Delete(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("Invalid ID")
 	}
 
-	queries.DeleteTodoData(con, id)
+	err = queries.DeleteTodoData(con, id)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }

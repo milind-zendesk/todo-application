@@ -2,14 +2,10 @@ package queries
 
 import (
 	"database/sql"
-	"fmt"
-	"todo-application/database"
 	"todo-application/model"
 )
 
-var con, _ = database.Connection()
-
-func GetAllTodosData() ([]model.Todos, error) {
+func GetAllTodosData(con *sql.DB) ([]model.Todos, error) {
 	todos := []model.Todos{}
 
 	results, err := con.Query("SELECT * FROM todo;")
@@ -32,7 +28,7 @@ func GetAllTodosData() ([]model.Todos, error) {
 	return todos, nil
 }
 
-func GetTodoData(id int) (model.Todos, error) {
+func GetTodoData(con *sql.DB, id int) (model.Todos, error) {
 	todos := model.Todos{}
 
 	results, err := con.Query("SELECT * FROM todo where id = ?", id)
@@ -52,25 +48,26 @@ func GetTodoData(id int) (model.Todos, error) {
 	return todos, nil
 }
 
-func UpdateTodoData(con *sql.DB, id int, data model.Todos) {
-	update, err := con.Query("UPDATE todo set title=? , status=? where id=?", data.Title, data.Status, data.Id)
+func UpdateTodoData(con *sql.DB, id int, data model.Todos) error {
+	_, err := con.Exec("UPDATE todo set title=? , status=? where id=?", data.Title, data.Status, data.Id)
 	if err != nil {
-		fmt.Println(err.Error())
-	} else {
-		defer update.Close()
+		return err
 	}
+	return nil
 }
 
-func InsertTodoData(con *sql.DB, data model.Todos) {
+func InsertTodoData(con *sql.DB, data model.Todos) error {
 	_, err := con.Exec("INSERT INTO todo(title, status) VALUES (?,?)", data.Title, data.Status)
 	if err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
+	return nil
 }
 
-func DeleteTodoData(con *sql.DB, id int) {
+func DeleteTodoData(con *sql.DB, id int) error {
 	_, err := con.Exec("DELETE FROM todo where id = ?", id)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
+	return nil
 }

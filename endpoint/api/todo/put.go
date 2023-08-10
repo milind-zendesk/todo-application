@@ -3,6 +3,7 @@ package todo
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"todo-application/database"
@@ -23,5 +24,8 @@ func Update(writer http.ResponseWriter, request *http.Request) {
 
 	var todo model.Todos
 	json.NewDecoder(request.Body).Decode(&todo)
-	queries.UpdateTodoData(con, id, todo)
+	err = queries.UpdateTodoData(con, id, todo)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 }

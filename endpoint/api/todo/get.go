@@ -7,15 +7,17 @@ import (
 	"net/http"
 	"strconv"
 
+	"todo-application/database"
 	"todo-application/endpoint/api/todo/queries"
 
 	"github.com/gorilla/mux"
 )
 
 func GetAll(writer http.ResponseWriter, request *http.Request) {
+	var con, _ = database.Connection()
 	writer.Header().Set("Content-Type", "application/json")
 
-	todos, err := queries.GetAllTodosData()
+	todos, err := queries.GetAllTodosData(con)
 	if err != nil {
 		panic(err)
 	}
@@ -27,6 +29,7 @@ func GetAll(writer http.ResponseWriter, request *http.Request) {
 }
 
 func Get(writer http.ResponseWriter, request *http.Request) {
+	var con, _ = database.Connection()
 	writer.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(request)
 	id, err := strconv.Atoi(params["id"])
@@ -34,7 +37,7 @@ func Get(writer http.ResponseWriter, request *http.Request) {
 		fmt.Println("Invalid ID")
 	}
 
-	todo, err := queries.GetTodoData(id)
+	todo, err := queries.GetTodoData(con, id)
 	if err != nil {
 		panic(err)
 	}
