@@ -6,11 +6,11 @@ import (
 )
 
 type Queries interface {
-	GetAllTodosData(con *sql.DB)
-	GetTodoData(con *sql.DB, id int)
-	UpdateTodoData(con *sql.DB, id int, data model.Todos)
-	InsertTodoData(con *sql.DB, data model.Todos)
-	DeleteTodoData(con *sql.DB, id int)
+	GetAllTodosData(con *sql.DB) ([]model.Todos, error)
+	GetTodoData(con *sql.DB, id int) (model.Todos, error)
+	UpdateTodoData(con *sql.DB, id int, data model.Todos) error
+	InsertTodoData(con *sql.DB, data model.Todos) error
+	DeleteTodoData(con *sql.DB, id int) error
 }
 
 func GetAllTodosData(con *sql.DB) ([]model.Todos, error) {
