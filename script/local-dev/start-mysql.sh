@@ -53,7 +53,8 @@ mysql --host="${MYSQL_HOSTNAME}" --user=root --password="${mysql_root_password}"
   CREATE USER $AURORA_USERNAME IDENTIFIED BY '$AURORA_PASSWORD';
   GRANT ALL PRIVILEGES ON $AURORA_DATABASE_NAME.* TO $AURORA_USERNAME;
 
-  CREATE TABLE IF NOT EXISTS $AURORA_DATABASE_NAME.todo( id int(9) not null auto_increment, title varchar(255) not null, status varchar(255), primary key (id))ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+  CREATE TABLE IF NOT EXISTS $AURORA_DATABASE_NAME.user( id int(9) not null auto_increment, name varchar(255) not null, location varchar(255), primary key (id))ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+  CREATE TABLE IF NOT EXISTS $AURORA_DATABASE_NAME.todo( id int(9) not null auto_increment, title varchar(255) not null, status varchar(255) not null, priority varchar(255) not null, user_id int (9) not null, primary key (id), foreign key (user_id) references user(id))ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 EOT
 echo "🥁  ${GREEN}MySQL settings done...${GREY}"
