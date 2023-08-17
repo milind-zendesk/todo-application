@@ -6,26 +6,26 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"todo-application/database"
 	"todo-application/endpoint/api/todo/queries"
 	"todo-application/model"
 
 	"github.com/gorilla/mux"
 )
 
-func Update(writer http.ResponseWriter, request *http.Request) {
-	var con, _ = database.Connection()
-	params := mux.Vars(request)
+func UpdateHandler(queries queries.Queries) func(writer http.ResponseWriter, request *http.Request) {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		params := mux.Vars(request)
 
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		fmt.Println("Invalid ID")
-	}
+		id, err := strconv.Atoi(params["id"])
+		if err != nil {
+			fmt.Println("Invalid ID")
+		}
 
-	var todo model.Todos
-	json.NewDecoder(request.Body).Decode(&todo)
-	err = queries.UpdateTodoData(con, id, todo)
-	if err != nil {
-		log.Fatal(err.Error())
+		var todo model.Todos
+		json.NewDecoder(request.Body).Decode(&todo)
+		err = queries.UpdateTodoData(id, todo)
+		if err != nil {
+			log.Fatal(err.Error())
+		}
 	}
 }

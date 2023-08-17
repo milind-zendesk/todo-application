@@ -16,8 +16,6 @@ func StoreFakeData(writer http.ResponseWriter, request *http.Request) {
 	if err != nil {
 		log.Fatal(err.Error())
 	}
-	// rand.Seed(time.Now().UnixNano())
-	// gofakeit.Seed(time.Now().UnixNano())
 
 	// Generate 100 random user records
 	users := make([]model.User, 100)
