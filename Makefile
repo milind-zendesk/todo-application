@@ -2,7 +2,7 @@ include Makefile.tool
 
 .DEFAULT_GOAL := run
 
-MOCK_FILES = $(shell grep -l -R "go:generate mockgen" endpoint/api/todo/.)
+MOCK_FILES = $(shell grep -l -R "go:generate mockgen" endpoint/api/.)
 
 ##@ Bootstrap the project
 .PHONY: bootstrap
