@@ -6,10 +6,24 @@ import (
 	"todo-application/model"
 )
 
-func GetAllUsersData(con *sql.DB) ([]model.User, error) {
+//go:generate mockgen --build_flags=--mod=mod -package userqueries -destination user_queries_mock.go . UserQueries
+
+type UserQueries interface {
+	GetAllUsersData() ([]model.User, error)
+	GetUserData(id int) (model.User, error)
+	GetUserTodosData(id int) (model.UserTodoDetails, error)
+	UpdateUserData(id int, data model.User) error
+	InsertUserData(data model.User) error
+}
+
+type DBConn struct {
+	Con *sql.DB
+}
+
+func (d *DBConn) GetAllUsersData() ([]model.User, error) {
 	users := []model.User{}
 
-	results, err := con.Query("SELECT * FROM user;")
+	results, err := d.Con.Query("SELECT * FROM user;")
 	if err != nil {
 		return users, err
 	}
@@ -29,10 +43,10 @@ func GetAllUsersData(con *sql.DB) ([]model.User, error) {
 	return users, nil
 }
 
-func GetUserData(con *sql.DB, id int) (model.User, error) {
+func (d *DBConn) GetUserData(id int) (model.User, error) {
 	user := model.User{}
 
-	results, err := con.Query("SELECT * FROM user where id = ?", id)
+	results, err := d.Con.Query("SELECT * FROM user where id = ?", id)
 	if err != nil {
 		return user, err
 	}
@@ -49,10 +63,10 @@ func GetUserData(con *sql.DB, id int) (model.User, error) {
 	return user, nil
 }
 
-func GetUserTodosData(con *sql.DB, id int) (model.UserTodoDetails, error) {
+func (d *DBConn) GetUserTodosData(id int) (model.UserTodoDetails, error) {
 	user_todo_details := model.UserTodoDetails{}
 
-	results, err := con.Query("SELECT * FROM user where id = ?", id)
+	results, err := d.Con.Query("SELECT * FROM user where id = ?", id)
 	if err != nil {
 		return user_todo_details, err
 	}
@@ -66,7 +80,7 @@ func GetUserTodosData(con *sql.DB, id int) (model.UserTodoDetails, error) {
 		}
 	}
 
-	results, err = con.Query("SELECT * FROM todo where user_id = ?", id)
+	results, err = d.Con.Query("SELECT * FROM todo where user_id = ?", id)
 	if err != nil {
 		return user_todo_details, err
 	}
@@ -97,16 +111,16 @@ func GetUserTodosData(con *sql.DB, id int) (model.UserTodoDetails, error) {
 	return user_todo_details, nil
 }
 
-func UpdateUserData(con *sql.DB, id int, data model.User) error {
-	_, err := con.Exec("UPDATE user set name=? , location=? where id=?", data.Name, data.Location, data.Id)
+func (d *DBConn) UpdateUserData(id int, data model.User) error {
+	_, err := d.Con.Exec("UPDATE user set name=? , location=? where id=?", data.Name, data.Location, data.Id)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func InsertUserData(con *sql.DB, data model.User) error {
-	_, err := con.Exec("INSERT INTO user(name, location) VALUES (?,?)", data.Name, data.Location)
+func (d *DBConn) InsertUserData(data model.User) error {
+	_, err := d.Con.Exec("INSERT INTO user(name, location) VALUES (?,?)", data.Name, data.Location)
 	if err != nil {
 		return err
 	}
