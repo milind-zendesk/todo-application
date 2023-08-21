@@ -29,7 +29,10 @@ get-users: ##To get all records from user
 	curl localhost:8080/users | jq .
 
 add-todo: ##To add new entry in todo table
-	curl -X POST localhost:8080/insert_todo -d '{"title":"Sleep","status":"Pending"}'
+	curl -X POST localhost:8080/insert_todo -d '{"title":"Sleep","status":"not started","priority":"low","user_id":3}'
+
+add-user: ##To add new entry in user table
+	curl -X POST localhost:8080/add_users -d '{"name":"Milind Shinde","location":"Pune"}'
 
 vendor:
 	go mod vendor
